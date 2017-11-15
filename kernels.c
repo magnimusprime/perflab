@@ -48,8 +48,10 @@ char rotate_descr[] = "rotate: Current working version";
 void rotate(int dim, pixel *src, pixel *dst) 
 {
     int i, j;
-    int i_1, i_2, i_3, i_4, i_5, i_6, i_7, i_8, i_9, i_10, i_11, i_12, i_13, i_14, i_15;
-    for (i = 0; i < dim; i+=16){
+    int i_1, i_2, i_3, i_4, i_5, i_6, i_7, i_8, i_9, i_10, i_11, i_12, i_13, 
+        i_14, i_15, i_16, i_17, i_18, i_19, i_20, i_21, i_22, i_23, i_24,
+        i_25, i_26, i_27, i_28, i_29, i_30, i_31;
+    for (i = 0; i < dim; i+=32){
         i_1 = i+1;
         i_2 = i+2;
         i_3 = i+3;
@@ -65,6 +67,22 @@ void rotate(int dim, pixel *src, pixel *dst)
         i_13 = i+13;
         i_14 = i+14;
         i_15 = i+15;
+        i_16 = i+16;
+        i_17 = i+17;
+        i_18 = i+18;
+        i_19 = i+19;
+        i_20 = i+20;
+        i_21 = i+21;
+        i_22 = i+22;
+        i_23 = i+23;
+        i_24 = i+24;
+        i_25 = i+25;
+        i_26 = i+26;
+        i_27 = i+27;
+        i_28 = i+28;
+        i_29 = i+29;
+        i_30 = i+30;
+        i_31 = i+31;
          
     for (j = 0; j < dim; j++){
 	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
@@ -83,7 +101,22 @@ void rotate(int dim, pixel *src, pixel *dst)
         dst[RIDX(dim-1-j, i_13, dim)] = src[RIDX(i_13, j, dim)];
         dst[RIDX(dim-1-j, i_14, dim)] = src[RIDX(i_14, j, dim)];
         dst[RIDX(dim-1-j, i_15, dim)] = src[RIDX(i_15, j, dim)];
-
+        dst[RIDX(dim-1-j, i_16, dim)] = src[RIDX(i_16, j, dim)];
+        dst[RIDX(dim-1-j, i_17, dim)] = src[RIDX(i_17, j, dim)];
+        dst[RIDX(dim-1-j, i_18, dim)] = src[RIDX(i_18, j, dim)];
+        dst[RIDX(dim-1-j, i_19, dim)] = src[RIDX(i_19, j, dim)];
+        dst[RIDX(dim-1-j, i_20, dim)] = src[RIDX(i_20, j, dim)];
+        dst[RIDX(dim-1-j, i_21, dim)] = src[RIDX(i_21, j, dim)];
+        dst[RIDX(dim-1-j, i_22, dim)] = src[RIDX(i_22, j, dim)];
+        dst[RIDX(dim-1-j, i_23, dim)] = src[RIDX(i_23, j, dim)];
+        dst[RIDX(dim-1-j, i_24, dim)] = src[RIDX(i_24, j, dim)];
+        dst[RIDX(dim-1-j, i_25, dim)] = src[RIDX(i_25, j, dim)];
+        dst[RIDX(dim-1-j, i_26, dim)] = src[RIDX(i_26, j, dim)];
+        dst[RIDX(dim-1-j, i_27, dim)] = src[RIDX(i_27, j, dim)];
+        dst[RIDX(dim-1-j, i_28, dim)] = src[RIDX(i_28, j, dim)];
+        dst[RIDX(dim-1-j, i_29, dim)] = src[RIDX(i_29, j, dim)];
+        dst[RIDX(dim-1-j, i_30, dim)] = src[RIDX(i_30, j, dim)];
+        dst[RIDX(dim-1-j, i_31, dim)] = src[RIDX(i_31, j, dim)];
     }
   }
 }
