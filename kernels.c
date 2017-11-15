@@ -48,18 +48,26 @@ char rotate_descr[] = "rotate: Current working version";
 void rotate(int dim, pixel *src, pixel *dst) 
 {
     int i, j;
-
-    for (i = 0; i < dim; i++)
-	for (j = 0; j < dim; j+=8){
+    int i_1, i_2, i_3, i_4, i_5, i_6, i_7;
+    for (i = 0; i < dim; i+=8){
+        i_1 = i+1;
+        i_2 = i+2;
+        i_3 = i+3;
+        i_4 = i+4;
+        i_5 = i+5;
+        i_6 = i+6;
+        i_7 = i+7;
+    for (j = 0; j < dim; j++){
 	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
-		dst[RIDX(dim-1-(j+1), i, dim)] = src[RIDX(i, (j+1), dim)];
-        dst[RIDX(dim-1-(j+2), i, dim)] = src[RIDX(i, (j+2), dim)];
-        dst[RIDX(dim-1-(j+3), i, dim)] = src[RIDX(i, (j+3), dim)];
-        dst[RIDX(dim-1-(j+4), i, dim)] = src[RIDX(i, (j+4), dim)];
-        dst[RIDX(dim-1-(j+5), i, dim)] = src[RIDX(i, (j+5), dim)];
-        dst[RIDX(dim-1-(j+6), i, dim)] = src[RIDX(i, (j+6), dim)];
-        dst[RIDX(dim-1-(j+7), i, dim)] = src[RIDX(i, (j+7), dim)];
+        dst[RIDX(dim-1-j, i_1, dim)] = src[RIDX(i_1, j, dim)];
+        dst[RIDX(dim-1-j, i_2, dim)] = src[RIDX(i_2, j, dim)];
+        dst[RIDX(dim-1-j, i_3, dim)] = src[RIDX(i_3, j, dim)];
+        dst[RIDX(dim-1-j, i_4, dim)] = src[RIDX(i_4, j, dim)];
+        dst[RIDX(dim-1-j, i_5, dim)] = src[RIDX(i_5, j, dim)];
+        dst[RIDX(dim-1-j, i_6, dim)] = src[RIDX(i_6, j, dim)];
+        dst[RIDX(dim-1-j, i_7, dim)] = src[RIDX(i_7, j, dim)];
     }
+  }
 }
 
 /*********************************************************************
@@ -190,8 +198,9 @@ void smooth(int dim, pixel *src, pixel *dst)
  *********************************************************************/
 
 void register_smooth_functions() {
-    add_smooth_function(&smooth, smooth_descr);
+/*     add_smooth_function(&smooth, smooth_descr);
     add_smooth_function(&naive_smooth, naive_smooth_descr);
-    /* ... Register additional test functions here */
+     ... Register additional test functions here */
+
 }
 
