@@ -48,8 +48,8 @@ char rotate_descr[] = "rotate: Current working version";
 void rotate(int dim, pixel *src, pixel *dst) 
 {
     int i, j;
-    int i_1, i_2, i_3, i_4, i_5, i_6, i_7;
-    for (i = 0; i < dim; i+=8){
+    int i_1, i_2, i_3, i_4, i_5, i_6, i_7, i_8, i_9, i_10, i_11, i_12, i_13, i_14, i_15;
+    for (i = 0; i < dim; i+=16){
         i_1 = i+1;
         i_2 = i+2;
         i_3 = i+3;
@@ -57,6 +57,15 @@ void rotate(int dim, pixel *src, pixel *dst)
         i_5 = i+5;
         i_6 = i+6;
         i_7 = i+7;
+        i_8 = i+8;
+        i_9 = i+9;
+        i_10 = i+10;
+        i_11 = i+11;
+        i_12 = i+12;
+        i_13 = i+13;
+        i_14 = i+14;
+        i_15 = i+15;
+         
     for (j = 0; j < dim; j++){
 	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
         dst[RIDX(dim-1-j, i_1, dim)] = src[RIDX(i_1, j, dim)];
@@ -66,6 +75,15 @@ void rotate(int dim, pixel *src, pixel *dst)
         dst[RIDX(dim-1-j, i_5, dim)] = src[RIDX(i_5, j, dim)];
         dst[RIDX(dim-1-j, i_6, dim)] = src[RIDX(i_6, j, dim)];
         dst[RIDX(dim-1-j, i_7, dim)] = src[RIDX(i_7, j, dim)];
+        dst[RIDX(dim-1-j, i_8, dim)] = src[RIDX(i_8, j, dim)];
+        dst[RIDX(dim-1-j, i_9, dim)] = src[RIDX(i_9, j, dim)];
+        dst[RIDX(dim-1-j, i_10, dim)] = src[RIDX(i_10, j, dim)];
+        dst[RIDX(dim-1-j, i_11, dim)] = src[RIDX(i_11, j, dim)];
+        dst[RIDX(dim-1-j, i_12, dim)] = src[RIDX(i_12, j, dim)];
+        dst[RIDX(dim-1-j, i_13, dim)] = src[RIDX(i_13, j, dim)];
+        dst[RIDX(dim-1-j, i_14, dim)] = src[RIDX(i_14, j, dim)];
+        dst[RIDX(dim-1-j, i_15, dim)] = src[RIDX(i_15, j, dim)];
+
     }
   }
 }
