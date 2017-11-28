@@ -178,50 +178,35 @@ static pixel avg(int dim, int i, int j, pixel *src)
     int ii, jj;
     pixel_sum sum;
     pixel current_pixel;
-         initialize_pixel_sum(&sum);
-    for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++)
+
+    initialize_pixel_sum(&sum);
+    for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++) 
 	for(jj = max(j-1, 0); jj <= min(j+1, dim-1); jj++) 
-        accumulate_sum(&sum, src[RIDX(ii, jj, dim)]);
-    
+	    accumulate_sum(&sum, src[RIDX(ii, jj, dim)]);
+
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
 static pixel avgMid(int dim, int i, int j, pixel *src) 
 {
     int ii, jj;
-    __m128i sum = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    pixel_sum sum;
     pixel current_pixel;
 
-    __m128i first_pixel, second_pixel, third_pixel, fourth_pixel, fifth_pixel,
-         sixth_pixel, seventh_pixel, eigth_pixel, ninth_pixel;
-    
-        first_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i-1, j-1, dim)]);
-        second_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i, j-1, dim)]);
-        third_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i+1, j-1, dim)]);
-        fourth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i-1, j, dim)]);
-        fifth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i , j, dim)]);
-        sixth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i+1, j, dim)]);
-        seventh_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i-1, j+1, dim)]);
-        eigth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i, j+1, dim)]);
-        ninth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i+1, j+1, dim)]);
-
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(first_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(second_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(third_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(fourth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(fifth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(sixth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(seventh_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(eigth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(ninth_pixel));
-
-       unsigned short pixel_elements[8];
-       _mm_storeu_si128((__m128i*) pixel_elements, sum);
-       current_pixel.red = (unsigned char) (pixel_elements[0]/9); 
-       current_pixel.green = (unsigned char) (pixel_elements[1]/9); 
-       current_pixel.blue = (unsigned char) (pixel_elements[2]/9); 
-       current_pixel.alpha = (unsigned char) (pixel_elements[3]/9); 
-
+    initialize_pixel_sum(&sum);
+    //for(ii = i-1; ii <= i+1; ii++) 
+    //for(jj = j-1; jj <= j+1; jj++)
+    accumulate_sum_hardcode(&sum, src[RIDX(i-1, j-1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i, j-1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i+1, j-1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i-1, j, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i, j, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i+1, j, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i-1, j+1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i, j+1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(i+1, j+1, dim)]);
+    sum.num=9;
+    assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
 
@@ -320,6 +305,37 @@ void smooth(int dim, pixel *src, pixel *dst)
   for (i=1;i<dim-1;i++)
     dst[RIDX(i, dim-1, dim)] = avgRightEdge(dim, i, dim-1, src);
  
+/*   // top left corner
+  pixel sum1;
+     sum1.red=(unsigned char)((int)src[RIDX(0, 0, dim)].red+(int)src[RIDX(1, 0, dim)].red+(int)src[RIDX(0, 1, dim)].red+(int)src[RIDX(1, 1, dim)].red)/4;
+    sum1.blue=(unsigned char)((int)src[RIDX(0, 0, dim)].blue+(int)src[RIDX(1, 0, dim)].blue+(int)src[RIDX(0, 1, dim)].blue+(int)src[RIDX(1, 1, dim)].blue)/4;
+	sum1.green=(unsigned char)((int)src[RIDX(0, 0, dim)].green+(int)src[RIDX(1, 0, dim)].green+(int)src[RIDX(0, 1, dim)].green+(int)src[RIDX(1, 1, dim)].green)/4;
+	sum1.alpha=(unsigned char)((int)src[RIDX(0, 0, dim)].alpha+(int)src[RIDX(1, 0, dim)].alpha+(int)src[RIDX(0, 1, dim)].alpha+(int)src[RIDX(1, 1, dim)].alpha)/4;
+	dst[0]=sum1; */
+/*// top right corner               *
+    pixel sum2;
+    sum2.red=(unsigned char)((int)src[RIDX(0, d, dim)].red+(int)src[RIDX(1, d, dim)].red+(int)src[RIDX(0, d-1, dim)].red+(int)src[RIDX(1, d-1, dim)].red)/4;
+    sum2.blue=(unsigned char)((int)src[RIDX(0, d, dim)].blue+(int)src[RIDX(1, d, dim)].blue+(int)src[RIDX(0, d-1, dim)].blue+(int)src[RIDX(1, d-1, dim)].blue)/4;
+	sum2.green=(unsigned char)((int)src[RIDX(0, d, dim)].green+(int)src[RIDX(1, d, dim)].green+(int)src[RIDX(0, d-1, dim)].green+(int)src[RIDX(1, d-1, dim)].green)/4;
+	sum2.alpha=(unsigned char)((int)src[RIDX(0, d, dim)].alpha+(int)src[RIDX(1, d, dim)].alpha+(int)src[RIDX(0, d-1, dim)].alpha+(int)src[RIDX(1, d-1, dim)].alpha)/4;
+	dst[d]=sum2;*/			      
+/*   // bottom left corner
+    pixel sum3;
+    sum3.red=(unsigned char)((int)src[RIDX(d, 0, dim)].red+(int)src[RIDX(d-1, 0, dim)].red+(int)src[RIDX(d, 1, dim)].red+(int)src[RIDX(d-1, 1, dim)].red)/4;
+    sum3.blue=(unsigned char)((int)src[RIDX(d, 0, dim)].blue+(int)src[RIDX(d-1, 0, dim)].blue+(int)src[RIDX(d, 1, dim)].blue+(int)src[RIDX(d-1, 1, dim)].blue)/4;
+	sum3.green=(unsigned char)((int)src[RIDX(d, 0, dim)].green+(int)src[RIDX(d-1, 0, dim)].green+(int)src[RIDX(d, 1, dim)].green+(int)src[RIDX(d-1, 1, dim)].green)/4;
+    sum3.alpha=(unsigned char)((int)src[RIDX(d, 0, dim)].alpha+(int)src[RIDX(d-1, 0, dim)].alpha+(int)src[RIDX(d, 1, dim)].alpha+(int)src[RIDX(d-1, 1, dim)].alpha)/4;
+	dst[RIDX(d,0,dim)]=sum3; */
+/*   // bottom right corner 
+    pixel sum4;
+    sum4.red=(unsigned char)((int)src[RIDX(d, d, dim)].red+(int)src[RIDX(d-1, d, dim)].red+(int)src[RIDX(d, d-1, dim)].red+(int)src[RIDX(d-1, d-1, dim)].red)/4;
+    sum4.blue=(unsigned char)((int)src[RIDX(d, d, dim)].blue+(int)src[RIDX(d-1, d, dim)].blue+(int)src[RIDX(d, d-1, dim)].blue+(int)src[RIDX(d-1, d-1, dim)].blue)/4;
+    sum4.green=(unsigned char)((int)src[RIDX(d, d, dim)].green+(int)src[RIDX(d-1, d, dim)].green+(int)src[RIDX(d, d-1, dim)].green+(int)src[RIDX(d-1, d-1, dim)].green)/4;
+    sum4.alpha=(unsigned char)((int)src[RIDX(d, d, dim)].alpha+(int)src[RIDX(d-1, d, dim)].alpha+(int)src[RIDX(d, d-1, dim)].alpha+(int)src[RIDX(d-1, d-1, dim)].alpha)/4;
+    dst[RIDX(d,d,dim)]=sum4;*/			      
+// middle
+    
+  
   for (i=1; i< dim-1;i++)
       for (j=1; j<dim-1;j++)
 	    dst[RIDX(i, j, dim)] = avgMid(dim, i, j, src);
