@@ -200,7 +200,7 @@ static unsigned char* avgMid(int dim, int i, int j, pixel *src)
     pixel current_pixel;
     
     __m128i first_pixel, second_pixel, third_pixel, fourth_pixel, fifth_pixel,
-         sixth_pixel, seventh_pixel, eigth_pixel, ninth_pixel;
+      sixth_pixel, seventh_pixel, eigth_pixel, ninth_pixel, multi,addition,xxx;
     
         first_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i-1, j-1, dim)]);
         second_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i, j-1, dim)]);
@@ -231,15 +231,32 @@ static unsigned char* avgMid(int dim, int i, int j, pixel *src)
        current_pixel.alpha = (unsigned char) (pixel_elements[3]/9); 
        */
        static unsigned char r[8];
-       
-       r[0]=(unsigned char) (pixel_elements[0]/9);
+       __m128i c1 = _mm_setr_epi16(1,1,1,1,1,1,1,1);
+       __m128i h1 = _mm_setr_epi16(0x71c7,0x71c7,0x71c7,0x71c7,0x71c7,0x71c7,0x71c7,0x71c7);
+       xxx = _mm_loadu_si128((__m128i*) &pixel_elements[0]);
+       addition=_mm_add_epi16(c1, xxx);
+       multi=_mm_mulhi_epi16(addition, h1);
+       __m128i mask = _mm_setr_epi8(0, 0x80, 1, 0x80, 2, 0x80,3, 0x80, 4, 0x80,5, 0x80,6, 0x80,7,0x80);
+       __m128i value2 = _mm_shuffle_epi8(multi, mask);
+       unsigned short ddd[8];
+       _mm_storeu_si128((__m128i*) ddd, value2);
+       r[0]=(unsigned char) ddd[0];
+       r[1]=(unsigned char) ddd[1];
+       r[2]=(unsigned char) ddd[2]; 
+       r[3]=(unsigned char) ddd[3];
+       r[4]=(unsigned char) ddd[4];
+       r[5]=(unsigned char) ddd[5];
+       r[6]=(unsigned char) ddd[6];
+       r[7]=(unsigned char) ddd[7];
+       /*r[0]=(unsigned char) (pixel_elements[0]/9);
        r[1]=(unsigned char) (pixel_elements[1]/9);
        r[2]=(unsigned char) (pixel_elements[2]/9);
        r[3]=(unsigned char) (pixel_elements[3]/9);
        r[4]=(unsigned char) (pixel_elements[4]/9);
        r[5]=(unsigned char) (pixel_elements[5]/9);
        r[6]=(unsigned char) (pixel_elements[6]/9);
-       r[7]=(unsigned char) (pixel_elements[7]/9);
+       r[7]=(unsigned char) (pixel_elements[7]/9);*/
+       
        
        /*r[0]=(unsigned char) (((pixel_elements[0]+1) * 0x71c7) >> 18);
        r[1]=(unsigned char) (((pixel_elements[1]+1) * 0x71c7) >> 18);
