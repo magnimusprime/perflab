@@ -186,12 +186,19 @@ static pixel avg(int dim, int i, int j, pixel *src)
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
-static pixel avgMid(int dim, int i, int j, pixel *src) 
+static unsigned char* avgMid(int dim, int i, int j, pixel *src) 
 {
     int ii, jj;
-    __m128i sum = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum1 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum2 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum3 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum4 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum5 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum6 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum7 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
+    __m128i sum8 = _mm_setr_epi16(0,0,0,0,0,0,0,0);
     pixel current_pixel;
-
+    
     __m128i first_pixel, second_pixel, third_pixel, fourth_pixel, fifth_pixel,
          sixth_pixel, seventh_pixel, eigth_pixel, ninth_pixel;
     
@@ -205,24 +212,45 @@ static pixel avgMid(int dim, int i, int j, pixel *src)
         eigth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i, j+1, dim)]);
         ninth_pixel = _mm_loadu_si128((__m128i*) &src[RIDX(i+1, j+1, dim)]);
 
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(first_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(second_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(third_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(fourth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(fifth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(sixth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(seventh_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(eigth_pixel));
-       sum = _mm_add_epi16(sum, _mm_cvtepu8_epi16(ninth_pixel));
+	sum1 = _mm_add_epi16(_mm_cvtepu8_epi16(first_pixel),_mm_cvtepu8_epi16(second_pixel));
+       
+       sum2 = _mm_add_epi16(_mm_cvtepu8_epi16(third_pixel), _mm_cvtepu8_epi16(fourth_pixel));
+       
+       sum3 = _mm_add_epi16( _mm_cvtepu8_epi16(fifth_pixel), _mm_cvtepu8_epi16(sixth_pixel));
+       sum4 = _mm_add_epi16(_mm_cvtepu8_epi16(seventh_pixel),_mm_cvtepu8_epi16(eigth_pixel));
+       sum5 = _mm_add_epi16(sum1, sum2);
+       sum6 = _mm_add_epi16(sum3, sum4);
+       sum7 = _mm_add_epi16(sum5, sum6);
+       sum8 = _mm_add_epi16(sum7, _mm_cvtepu8_epi16(ninth_pixel));
 
        unsigned short pixel_elements[8];
-       _mm_storeu_si128((__m128i*) pixel_elements, sum);
-       current_pixel.red = (unsigned char) (pixel_elements[0]/9); 
+       _mm_storeu_si128((__m128i*) pixel_elements, sum8);
+       /*current_pixel.red = (unsigned char) (pixel_elements[0]/9); 
        current_pixel.green = (unsigned char) (pixel_elements[1]/9); 
        current_pixel.blue = (unsigned char) (pixel_elements[2]/9); 
        current_pixel.alpha = (unsigned char) (pixel_elements[3]/9); 
-
-    return current_pixel;
+       */
+       static unsigned char r[8];
+       
+       r[0]=(unsigned char) (pixel_elements[0]/9);
+       r[1]=(unsigned char) (pixel_elements[1]/9);
+       r[2]=(unsigned char) (pixel_elements[2]/9);
+       r[3]=(unsigned char) (pixel_elements[3]/9);
+       r[4]=(unsigned char) (pixel_elements[4]/9);
+       r[5]=(unsigned char) (pixel_elements[5]/9);
+       r[6]=(unsigned char) (pixel_elements[6]/9);
+       r[7]=(unsigned char) (pixel_elements[7]/9);
+       
+       /*r[0]=(unsigned char) (((pixel_elements[0]+1) * 0x71c7) >> 18);
+       r[1]=(unsigned char) (((pixel_elements[1]+1) * 0x71c7) >> 18);
+       r[2]=(unsigned char) (((pixel_elements[2]+1) * 0x71c7) >> 18);
+       r[3]=(unsigned char) (((pixel_elements[3]+1) * 0x71c7) >> 18);
+       r[4]=(unsigned char) (((pixel_elements[4]+1) * 0x71c7) >> 18);
+       r[5]=(unsigned char) (((pixel_elements[5]+1) * 0x71c7) >> 18);
+       r[6]=(unsigned char) (((pixel_elements[6]+1) * 0x71c7) >> 18);
+       r[7]=(unsigned char) (((pixel_elements[7]+1) * 0x71c7) >> 18);
+       */
+    return r;
 }
 
 static pixel avgTopEdge(int dim, int i, int j, pixel *src) 
@@ -321,8 +349,19 @@ void smooth(int dim, pixel *src, pixel *dst)
     dst[RIDX(i, dim-1, dim)] = avgRightEdge(dim, i, dim-1, src);
  
   for (i=1; i< dim-1;i++)
-      for (j=1; j<dim-1;j++)
-	    dst[RIDX(i, j, dim)] = avgMid(dim, i, j, src);
+    for (j=1; j<dim-1;j=j+2){
+	  unsigned char* p;
+          p=avgMid(dim, i, j, src);
+	  dst[RIDX(i, j, dim)].red=*p;
+	  dst[RIDX(i, j, dim)].green=*(p+1);
+	  dst[RIDX(i, j, dim)].blue=*(p+2);
+	  dst[RIDX(i, j, dim)].alpha=*(p+3);
+	  dst[RIDX(i, j+1, dim)].red=*(p+4);
+	  dst[RIDX(i, j+1, dim)].green=*(p+5);
+	  dst[RIDX(i, j+1, dim)].blue=*(p+6);
+	  dst[RIDX(i, j+1, dim)].alpha=*(p+7);
+	  
+    }	    
     dst[RIDX(d,d,dim)]=avg(dim,d,d,src);
     dst[RIDX(d,0,dim)]=avg(dim,d,0,src);
     dst[RIDX(0,d,dim)]=avg(dim,0,d,src);
