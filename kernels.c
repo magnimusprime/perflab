@@ -272,58 +272,75 @@ static unsigned char* avgMid(int dim, int i, int j, pixel *src)
 
 static pixel avgTopEdge(int dim, int i, int j, pixel *src) 
 {
-    int ii, jj;
+    int ii= i, jj = j-1;
+    int ii_1 = ii+1, jj_1 = jj+1, jj_2 = jj+2;
     pixel_sum sum;
     pixel current_pixel;
-
     initialize_pixel_sum(&sum);
-    for(ii = i; ii <= i+1; ii++) 
-	for(jj = j-1; jj <= j+1; jj++) 
-	    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
+	
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj_2, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj_2, dim)]);
+
     sum.num=6;
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
 static pixel avgBottomEdge(int dim, int i, int j, pixel *src) 
 {
-    int ii, jj;
+    int ii= i-1, jj = j-1;
+    int ii_1 = ii+1, jj_1 = jj+1, jj_2 = jj+2;
     pixel_sum sum;
     pixel current_pixel;
-
     initialize_pixel_sum(&sum);
-    for(ii = i-1; ii <= i; ii++) 
-	for(jj = j-1; jj <= j+1; jj++) 
-	    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
-    sum.num=6;
+	
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj_2, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj_2, dim)]);
+    sum.num = 6;
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
 
 static pixel avgLeftEdge(int dim, int i, int j, pixel *src) 
 {
-    int ii, jj;
+    int ii= i-1, jj = j;
+    int ii_1 = ii+1, jj_1 = jj+1, ii_2 = ii+2;
     pixel_sum sum;
     pixel current_pixel;
-
     initialize_pixel_sum(&sum);
-    for(ii = i-1; ii <= i+1; ii++) 
-	for(jj = j; jj <= j+1; jj++) 
-	    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
-    sum.num=6;
+	
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_2, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_2, jj_1, dim)]);
+    sum.num = 6;
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
 static pixel avgRightEdge(int dim, int i, int j, pixel *src) 
 {
-    int ii, jj;
+    int ii= i-1, jj = j-1;
+    int ii_1 = ii+1, jj_1 = jj+1, ii_2 = ii+2;
     pixel_sum sum;
     pixel current_pixel;
-
     initialize_pixel_sum(&sum);
-    for(ii = i-1; ii <= i+1; ii++) 
-	for(jj = j-1; jj <= j; jj++) 
-	    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
-    sum.num=6;
+	
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_2, jj, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_1, jj_1, dim)]);
+    accumulate_sum_hardcode(&sum, src[RIDX(ii_2, jj_1, dim)]);
+    sum.num = 6;
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
 }
